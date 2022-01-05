@@ -16,7 +16,8 @@ def create_incidents(db: Session, incident: schemas.IncidentCreate):
                                   latitude_incident=incident.latitude_incident,
                                   longitude_incident=incident.longitude_incident,
                                   intensite_incident=incident.intensite_incident,
-                                  date_incident=incident.date_incident)
+                                  date_incident=incident.date_incident,
+                                  id_type_status_incident=incident.id_type_status_incident)
     db.add(db_incident)
     db.commit()
     db.refresh(db_incident)
@@ -86,3 +87,35 @@ def get_detecte_event(id_incident:int , id_detecteur:int ,db: Session):
 
 def get_detectes_events(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Detecte).offset(skip).limit(limit).all()
+
+
+
+"""Pompier"""
+
+
+def create_pompier(db: Session, pompier: schemas.PompierCreate):
+    db_pompier = models.Pompier(
+        id_caserne = pompier.id_caserne,
+        id_type_pompier = pompier.id_type_pompier,
+        nom_pompier = pompier.nom_pompier,
+        prenom_pompier = pompier.prenom_pompier,
+        date_naissance_pompier = pompier.date_naissance_pompier,
+        nombre_intervention_jour_maximum_pompier = pompier.nombre_intervention_jour_maximum_pompier,
+        disponibilite_pompier= pompier.disponibilite_pompier
+    )
+    db.add(db_pompier)
+    db.commit()
+    db.refresh(db_pompier)
+    return db_pompier
+
+"""caserne"""
+def create_caserne(db: Session, caserne: schemas.CaserneCreate):
+    db_caserne = models.Caserne(
+        nom_caserne = caserne.nom_caserne,
+        latitude_caserne = caserne.latitude_caserne,
+        longitude_caserne = caserne.longitude_caserne
+    )
+    db.add(db_caserne)
+    db.commit()
+    db.refresh(db_caserne)
+    return db_caserne
