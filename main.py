@@ -1,5 +1,5 @@
 from utilities import fonction, token
-from typing import List
+from typing import List, Optional
 
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
@@ -89,7 +89,7 @@ def nouvel_incident(token_api: str, incident: schemas.IncidentCreate, db: Sessio
 
 
 """GET  REQUESTS"""
-@app.get("/incident/{incident_id}", tags=["Incident"], response_model=schemas.Incident)
+@app.get("/incident/{incident_id}", tags=["Incident"], response_model=schemas.IncidentAll)
 def get_Incident(token_api: str, incident_id: int, db: Session = Depends(get_db)):
     """
     Récupères tous les incidents dans une table.
@@ -102,7 +102,7 @@ def get_Incident(token_api: str, incident_id: int, db: Session = Depends(get_db)
     return db_incident
 
 
-@app.get("/incidents/", tags=["Incident"], response_model=List[schemas.Incident])
+@app.get("/incidents/", tags=["Incident"], response_model=List[schemas.IncidentAll])
 def get_Incidents(token_api: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
     Récupères tous les incidents dans une table.
@@ -412,7 +412,7 @@ def recuperer_detecteur_by_id(token_api: str, id_detecteur: int, db: Session = D
 
 
 @app.post("/detecte/", tags=["Detecte"], response_model=schemas.Detecte)
-def create_detecte_event(detecte: schemas.Detecte, token_api: str, db: Session = Depends(get_db)):
+def create_detecte_event(token_api: str, detecte: schemas.Detecte, db: Session = Depends(get_db)):
     """
     {
       "id_detecteur": 3,
@@ -427,14 +427,9 @@ def create_detecte_event(detecte: schemas.Detecte, token_api: str, db: Session =
     return event
 
 @app.get("/detecte/", tags=["Detecte"], response_model=schemas.Detecte)
-def get_detecte_event(id_detecteur:int, id_incident:int, token_api: str, db: Session = Depends(get_db)):
+def get_detecte_event(token_api: str,id_detecteur:int, id_incident:int, db: Session = Depends(get_db)):
     """
-    {
-      "id_detecteur": 3,
-      "intensite_detecte": 25,
-      "id_incident": 13,
-      "date_detecte": "2022-01-04T10:38:12.197000+00:00"
-    }
+    
 
     """
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
@@ -446,12 +441,7 @@ def get_detecte_event(id_detecteur:int, id_incident:int, token_api: str, db: Ses
 @app.get("/detectes/", tags=["Detecte"], response_model=List[schemas.Detecte])
 def get_detectes_events(token_api: str,skip: int = 0, limit: int = 100,  db: Session = Depends(get_db)):
     """
-    {
-      "id_detecteur": 3,
-      "intensite_detecte": 25,
-      "id_incident": 13,
-      "date_detecte": "2022-01-04T10:38:12.197000+00:00"
-    }
+    Recupere toutes les liaisons detecte.
 
     """
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
@@ -463,11 +453,17 @@ def get_detectes_events(token_api: str,skip: int = 0, limit: int = 100,  db: Ses
 @app.delete("/detecte/", tags=["Detecte"], response_model=schemas.Detecte)
 def delete_detecte(id_incident:int, id_detecteur:int, token_api: str, db: Session = Depends(get_db)):
     """
+    Supprime une liaison detecte.
+    les détécteurs détecent un incident. 
 
-    :param id_detecteur: int
-    :param id_incident: int
-    :param token_api: str
-    :return: schema.Detecte
+    <!--
+    Python : 
+
+        :param id_detecteur: int
+        :param id_incident: int
+        :param token_api: str
+        :return: schema.Detecte
+    -->
     """
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
     detecte_event_to_delete = db.query(models.Detecte).\
@@ -488,35 +484,120 @@ def delete_detecte(id_incident:int, id_detecteur:int, token_api: str, db: Sessio
 END CP SIMULATION
 =============="""
 
-@app.post("/pompier", tags=["Caserne"], response_model=schemas.Pompier)
-def create_pompier(token_api: str, pompier: schemas.PompierCreate, db: Session = Depends(get_db)):
-    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
-    return crud.create_pompier(db, pompier=pompier)
 
-#NE FOCNTIONNE PAS 
-@app.get("/pompier/{id_pompier}", tags=["Caserne"], response_model=schemas.Pompier)
-def create_pompier(token_api: str, pompier: schemas.PompierCreate, db: Session = Depends(get_db)):
-    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
-    return crud.create_pompier(db, pompier=pompier)
 
-#NE FOCNTIONNE PAS 
-@app.get("/pompiers/", tags=["Caserne"], response_model=schemas.Pompier)
-def create_pompier(token_api: str, pompier: schemas.PompierCreate, db: Session = Depends(get_db)):
-    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
-    return crud.create_pompier(db, pompier=pompier)
-
-#NE FOCNTIONNE PAS 
-@app.get("/pompiers/{id_caserne}", tags=["Caserne"], response_model=schemas.Pompier)
+"""==============
+POMPIER
+=============="""
+@app.post("/pompier", tags=["Pompier"], response_model=schemas.Pompier)
 def create_pompier(token_api: str, pompier: schemas.PompierCreate, db: Session = Depends(get_db)):
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
     return crud.create_pompier(db, pompier=pompier)
 
 
-@app.post("/caserne", tags=["Caserne"], response_model=schemas.Caserne)
+@app.get("/pompier/{id_pompier}", tags=["Pompier"], response_model=schemas.PompierAll)
+def get_pompier_id(token_api: str, id_pompier:int, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_pompier_id(db, id_pompier)
+
+@app.get("/pompier/search/", tags=["Pompier"], response_model=List[schemas.PompierAll])
+def get_pompier_by_name(token_api: str, nom_pompier: Optional[str] = None, prenom_pompier: Optional[str] = None, matricule_pompier: Optional[int] = None, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_pompier_by_search(db, nom_pompier, prenom_pompier, matricule_pompier)
+
+
+@app.get("/pompiers/", tags=["Pompier"], response_model=List[schemas.PompierAll])
+def get_pompier_all(token_api: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_pompier_all(db, skip, limit)
+
+
+@app.get("/pompiers/{id_caserne}", tags=["Pompier"], response_model=List[schemas.PompierAll])
+def get_pompier_id_caserne(token_api: str, id_caserne:int, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_pompier_id_caserne(db, id_caserne)
+
+#post type_pompier
+@app.post("/pompier/type", tags=["Pompier","type"], response_model=schemas.Type_pompier)
+def create_type_pompier(token_api: str, type_pompier: schemas.Type_pompierCreate, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.create_type_pompier(db, type_pompier=type_pompier)
+
+
+@app.get("/pompier/type/{id_type_pompier}", tags=["Pompier","type"], response_model=schemas.Type_pompier)
+def get_type_pompier_id(token_api: str, id_type_pompier:int, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_type_pompier_id(db, id_type_pompier)
+
+
+@app.get("/pompiers/type/", tags=["Pompier","type"], response_model=List[schemas.Type_pompier])
+def get_type_pompier_all(token_api: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_type_pompier_all(db, skip, limit)
+
+
+"""==============
+CASERNE
+=============="""
+@app.post("/caserne/", tags=["Caserne"], response_model=schemas.Caserne)
 def create_caserne(token_api: str, caserne: schemas.CaserneCreate, db: Session = Depends(get_db)):
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
     return crud.create_caserne(db, caserne=caserne)
 
-@app.post("/vehicule", tags=["Caserne"])
-def create_pvehicule():
-    pass
+@app.get("/caserne/{id_caserne}", tags=["Caserne"], response_model=schemas.Caserne)
+def get_caserne_id(token_api: str, id_caserne:int, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_caserne_id(db, id_caserne)
+
+
+@app.get("/casernes/", tags=["Caserne"], response_model=List[schemas.Caserne])
+def get_caserne_all(token_api: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_caserne_all(db, skip, limit)
+
+
+"""==============
+Vehicule
+=============="""
+@app.post("/vehicule", tags=["Vehicule"], response_model=schemas.Vehicule)
+def create_vehicule(token_api: str, vehicule: schemas.VehiculeCreate, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.create_vehicule(db, vehicule=vehicule)
+
+
+
+@app.get("/vehicule/{id_vehicule}", tags=["Vehicule"], response_model=schemas.VehiculeAll)
+def get_vehicule_id(token_api: str, id_vehicule:int, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_vehicule_id(db, id_vehicule)
+
+
+@app.get("/vehicules/", tags=["Vehicule"], response_model=List[schemas.VehiculeAll])
+def get_vehicule_all(token_api: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_vehicule_all(db, skip, limit)
+
+
+@app.get("/vehicules/{id_caserne}", tags=["Vehicule"], response_model=List[schemas.VehiculeAll])
+def get_vehicule_id_caserne(token_api: str, id_caserne:int, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_vehicule_id_caserne(db, id_caserne)
+
+#post type_vehicule
+@app.post("/vehicule/type", tags=["Vehicule","type"], response_model=schemas.Type_vehicule)
+def create_type_vehicule(token_api: str, type_vehicule: schemas.Type_vehiculeCreate, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.create_type_vehicule(db, type_vehicule=type_vehicule)
+
+
+@app.get("/vehicule/type/{id_type_vehicule}", tags=["Vehicule","type"], response_model=schemas.Type_vehicule)
+def get_type_vehicule_id(token_api: str, id_type_vehicule:int, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_type_vehicule_id(db, id_type_vehicule)
+
+
+@app.get("/vehicules/type/", tags=["Vehicule","type"], response_model=List[schemas.Type_vehicule])
+def get_type_vehicule_all(token_api: str, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.get_type_vehicule_all(db, skip, limit)
+

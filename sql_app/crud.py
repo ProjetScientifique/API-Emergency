@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func 
 from . import models, schemas
 
 
@@ -108,6 +109,46 @@ def create_pompier(db: Session, pompier: schemas.PompierCreate):
     db.refresh(db_pompier)
     return db_pompier
 
+def get_pompier_id(db: Session, pompier_id: int):
+    return db.query(models.Pompier). \
+        filter(models.Pompier.id_pompier == pompier_id). \
+        first()
+
+def get_pompier_by_search(db: Session, pompier_nom: str=False,pompier_prenom: str=False, id_pompier: int=False):
+    pompier_nom = f"%{pompier_nom}%".lower()
+    pompier_prenom = f"%{pompier_prenom}%".lower()
+    q = db.query(models.Pompier)
+    if pompier_nom: q.filter(func.lower(models.Pompier.nom_pompier).like(pompier_nom))
+    if pompier_prenom: q.filter(func.lower(models.Pompier.nom_pompier).like(pompier_prenom))
+    if id_pompier: q.filter(models.Pompier.id_pompier == id_pompier)
+    return q.all()
+
+def get_pompier_id_caserne(db: Session, caserne_id: int):
+    return db.query(models.Pompier). \
+        filter(models.Pompier.id_caserne == caserne_id). \
+        all()
+
+def get_pompier_all(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Pompier).offset(skip).limit(limit).all()
+
+def create_type_pompier(db: Session, type_pompier: schemas.Type_pompierCreate):
+    db_type_pompier = models.Type_pompier(
+        nom_type_pompier = type_pompier.nom_type_pompier,
+        efficacite_type_pompier = type_pompier.efficacite_type_pompier
+    )
+    db.add(db_type_pompier)
+    db.commit()
+    db.refresh(db_type_pompier)
+    return db_type_pompier
+
+def get_type_pompier_id(db: Session, id_type_pompier:int):
+    return db.query(models.Type_pompier). \
+        filter(models.Type_pompier.id_type_pompier == id_type_pompier). \
+        first()
+
+def get_type_pompier_all(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Type_pompier).offset(skip).limit(limit).all()
+
 """caserne"""
 def create_caserne(db: Session, caserne: schemas.CaserneCreate):
     db_caserne = models.Caserne(
@@ -119,3 +160,75 @@ def create_caserne(db: Session, caserne: schemas.CaserneCreate):
     db.commit()
     db.refresh(db_caserne)
     return db_caserne
+
+def get_caserne_id(db: Session, id_caserne:int):
+    return db.query(models.Caserne). \
+        filter(models.Caserne.id_caserne == id_caserne). \
+        first()
+
+def get_caserne_all(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Caserne).offset(skip).limit(limit).all()
+
+"""vehicule"""
+def create_vehicule(db: Session, vehicule: schemas.VehiculeCreate):
+    db_vehicule = models.Vehicule(
+        id_caserne = vehicule.id_caserne,
+        id_type_vehicule = vehicule.id_type_vehicule,
+        id_type_disponibilite_vehicule = vehicule.id_type_disponibilite_vehicule,
+        annee_vehicule = vehicule.annee_vehicule,
+        nombre_intervention_maximum_vehicule = vehicule.nombre_intervention_maximum_vehicule,
+        latitude_vehicule = vehicule.latitude_vehicule,
+        longitude_vehicule = vehicule.longitude_vehicule
+    )
+    db.add(db_vehicule)
+    db.commit()
+    db.refresh(db_vehicule)
+    return db_vehicule
+
+def get_vehicule_id(db: Session, vehicule_id: int):
+    return db.query(models.Vehicule). \
+        filter(models.Vehicule.id_vehicule == vehicule_id). \
+        first()
+
+"""
+# PEU SERVIR 
+# recherche par : 
+# annee
+# capacite ?
+# 
+# TODO
+def get_vehicule_by_search(db: Session, vehicule_nom: str=False,vehicule_prenom: str=False, id_vehicule: int=False):
+    vehicule_nom = f"%{vehicule_nom}%".lower()
+    vehicule_prenom = f"%{vehicule_prenom}%".lower()
+    q = db.query(models.Vehicule)
+    if vehicule_nom: q.filter(func.lower(models.Vehicule.nom_vehicule).like(vehicule_nom))
+    if vehicule_prenom: q.filter(func.lower(models.Vehicule.nom_vehicule).like(vehicule_prenom))
+    if id_vehicule: q.filter(models.Vehicule.id_vehicule == id_vehicule)
+    return q.all()
+"""
+def get_vehicule_id_caserne(db: Session, caserne_id: int):
+    return db.query(models.Vehicule). \
+        filter(models.Vehicule.id_caserne == caserne_id). \
+        all()
+
+def get_vehicule_all(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Vehicule).offset(skip).limit(limit).all()
+
+def create_type_vehicule(db: Session, type_vehicule: schemas.Type_vehiculeCreate):
+    db_type_vehicule = models.Type_vehicule(
+        nom_type_vehicule = type_vehicule.nom_type_vehicule,
+        capacite_type_vehicule = type_vehicule.capacite_type_vehicule,
+        puissance_intervention_type_vehicule = type_vehicule.puissance_intervention_type_vehicule
+    )
+    db.add(db_type_vehicule)
+    db.commit()
+    db.refresh(db_type_vehicule)
+    return db_type_vehicule
+
+def get_type_vehicule_id(db: Session, id_type_vehicule:int):
+    return db.query(models.Type_vehicule). \
+        filter(models.Type_vehicule.id_type_vehicule == id_type_vehicule). \
+        first()
+
+def get_type_vehicule_all(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Type_vehicule).offset(skip).limit(limit).all()

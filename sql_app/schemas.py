@@ -49,12 +49,16 @@ class IncidentCreate(IncidentBase):
 
 class Incident(IncidentBase):
     id_incident: int
-    type_incident : Type_incident
-    Type_status_incident : Type_status_incident
+    
     class Config:
         orm_mode = True
 
+class IncidentAll(Incident):
+    type_incident : Type_incident
+    Type_status_incident : Type_status_incident
 
+    class Config:
+        orm_mode = True
 
 
 """
@@ -158,22 +162,32 @@ __________                     .__
 
 """
 
-class Type_pompier(BaseModel):
-    id_type_pompier: int
+class Type_pompierBase(BaseModel):
     nom_type_pompier: str
     efficacite_type_pompier: int
+    
+
+class Type_pompierCreate(Type_pompierBase):
+    pass
+
+class Type_pompier(Type_pompierBase):
+    id_type_pompier: int
     class Config:
         orm_mode = True
+
 
 class PompierBase(BaseModel):
     id_caserne: int
     id_type_pompier: int
     nom_pompier: str
     prenom_pompier: str
-    date_naissance_pompier: datetime.datetime
+    date_naissance_pompier: datetime.date
     nombre_intervention_jour_maximum_pompier: int
     disponibilite_pompier: bool
-    
+
+    class Config:
+        orm_mode = True
+
 class PompierCreate(PompierBase):
    pass
 
@@ -186,12 +200,24 @@ class PompierUpdate(BaseModel):
     nombre_intervention_jour_maximum_pompier: Optional[int]
     disponibilite_pompier: Optional[bool]
 
-class Pompier(PompierBase):
-    id_pompier: int
-    type_pompier: Type_pompier
-    caserne: CaserneBase
     class Config:
         orm_mode = True
+
+class Pompier(PompierBase):
+    id_pompier: int
+
+    class Config:
+        orm_mode= True
+    
+    
+
+class PompierAll(Pompier):
+    type_pompier: Type_pompier
+    caserne: CaserneBase
+
+    class Config:
+        orm_mode = True
+
 
 """
 ____   ____     .__    .__             .__          
@@ -202,12 +228,19 @@ ____   ____     .__    .__             .__
               \/     \/        \/                \/ 
 """
 
-#type
-class Type_vehicule(BaseModel):
-    id_type_vehicule: int
+
+
+class Type_vehiculeCreate(BaseModel):
     nom_type_vehicule: str
     capacite_type_vehicule: int
     puissance_intervention_type_vehicule: int
+    class Config:
+        orm_mode = True
+
+#type
+class Type_vehicule(Type_vehiculeCreate):
+    id_type_vehicule: int
+    
     class Config:
         orm_mode = True
 
@@ -216,15 +249,18 @@ class Type_disponibilite_vehicule(BaseModel):
     id_type_disponibilite_vehicule: int
     nom_type_disponibilite_vehicule: str
 
+    class Config:
+        orm_mode = True
+
 
 class VehiculeBase(BaseModel):
     id_caserne: int
     id_type_vehicule: int
-    id_type_disponibilie_vehicule: int
+    id_type_disponibilite_vehicule: int
     annee_vehicule: int
     nombre_intervention_maximum_vehicule: int
-    latitude_vehicule: int
-    longitude_vehicule: int
+    latitude_vehicule: float
+    longitude_vehicule: float
 
     class Config:
         orm_mode = True
@@ -234,17 +270,22 @@ class VehiculeUpdate(BaseModel):
     id_caserne: Optional[int]
     id_type_disponibilie_vehicule: Optional[int]
     nombre_intervention_maximum_vehicule: Optional[int]
-    latitude_vehicule: Optional[int]
-    longitude_vehicule: Optional[int]
+    latitude_vehicule: Optional[float]
+    longitude_vehicule: Optional[float]
 
 class VehiculeCreate(VehiculeBase):
     pass
 
 class Vehicule(VehiculeBase):
     id_vehicule: int
+
+    class Config:
+        orm_mode = True
+
+class VehiculeAll(Vehicule):
     type_vehicule: Type_vehicule
-    disponibilite: Type_disponibilite_vehicule
     caserne: CaserneBase
+    type_disponibilite_vehicule: Type_disponibilite_vehicule
 
     class Config:
         orm_mode = True

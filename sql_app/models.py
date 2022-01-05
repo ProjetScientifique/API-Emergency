@@ -26,7 +26,6 @@ class Type_status_incident(Base):
 
     incidents = relationship("Incident", back_populates="type_status_incident")
 
-
 class Incident(Base):
     __tablename__ = "incident"
     id_incident = Column(Integer, primary_key=True)
@@ -42,7 +41,6 @@ class Incident(Base):
     detecte = relationship("Detecte", back_populates="incident")
     intervient = relationship("Intervient", back_populates="incident")
 
-
 """
 ________          __                 __                       
 \______ \   _____/  |_  ____   _____/  |_  ____  __ _________ 
@@ -52,14 +50,12 @@ ________          __                 __
         \/     \/          \/     \/          \/              
 """
 
-
 class Type_detecteur(Base):
     __tablename__ = "type_detecteur"
     id_type_detecteur = Column(Integer, primary_key=True)
     nom_type_detecteur = Column(String)
 
     detecteur = relationship("Detecteur", back_populates="type")
-
 
 class Detecteur(Base):
     __tablename__ = "detecteur"
@@ -107,7 +103,6 @@ __________                     .__
 
 """
 
-
 class Type_pompier(Base):
     __tablename__ = "type_pompier"
     id_type_pompier = Column(Integer, primary_key=True)
@@ -115,7 +110,6 @@ class Type_pompier(Base):
     efficacite_type_pompier = Column(Integer)
 
     pompier = relationship("Pompier", back_populates="type_pompier")
-
 
 class Pompier(Base):
     __tablename__ = "pompier"
@@ -131,8 +125,7 @@ class Pompier(Base):
     type_pompier = relationship("Type_pompier", back_populates="pompier")
     intervient = relationship("Intervient", back_populates="pompier")
     caserne = relationship("Caserne", back_populates="pompier")
-    
-    
+     
 """
 _________                                           
 \_   ___ \_____    ______ ___________  ____   ____  
@@ -162,7 +155,6 @@ ____   ____     .__    .__             .__
               \/     \/        \/                \/ 
 """
 
-
 class Type_vehicule(Base):
     __tablename__ = "type_vehicule"
     id_type_vehicule = Column(Integer, primary_key=True)
@@ -178,7 +170,7 @@ class Type_disponibilite_vehicule(Base):
     id_type_disponibilite_vehicule = Column(Integer, primary_key=True)
     nom_type_disponibilite_vehicule = Column(String)
 
-    vehicule = relationship("Vehicule", back_populates="type_disponibilie_vehicule")
+    vehicule = relationship("Vehicule", back_populates="type_disponibilite_vehicule")
 
 
 class Vehicule(Base):
@@ -186,25 +178,13 @@ class Vehicule(Base):
     id_vehicule = Column(Integer, primary_key=True)
     id_caserne = Column(Integer, ForeignKey('caserne.id_caserne'))
     id_type_vehicule = Column(Integer, ForeignKey('type_vehicule.id_type_vehicule'))
-    id_type_disponibilie_vehicule = Column(Integer, ForeignKey('type_disponibilite_vehicule.id_type_disponibilite_vehicule'))
+    id_type_disponibilite_vehicule = Column(Integer, ForeignKey('type_disponibilite_vehicule.id_type_disponibilite_vehicule'))
     annee_vehicule = Column(Integer)
     nombre_intervention_maximum_vehicule = Column(Integer)
     latitude_vehicule = Column(Numeric(precision=9, scale=7))
     longitude_vehicule = Column(Numeric(precision=10, scale=7))
 
-
     caserne = relationship("Caserne", back_populates="vehicule")
     type_vehicule = relationship("Type_vehicule", back_populates="vehicule")
-    type_disponibilie_vehicule = relationship("Type_disponibilite_vehicule", back_populates="vehicule")
+    type_disponibilite_vehicule = relationship("Type_disponibilite_vehicule", back_populates="vehicule")
     intervient = relationship("Intervient", back_populates="vehicule")
-
-    
-
-    
-    
-
-
-
-
-
-
