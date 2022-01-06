@@ -440,6 +440,34 @@ def create_pompier(token_api: str, pompier: schemas.PompierCreate, db: Session =
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
     return crud.create_pompier(db, pompier=pompier)
 
+"""PATCH REQUESTS"""
+
+@app.patch("/pompier/{pompier_id}", tags=["Pompier"], response_model=schemas.Pompier)
+def edit_pompier(pompier_id: int, token_api: str, pompier: schemas.PompierUpdate, db: Session = Depends(get_db)):
+    """
+    PATCH = met a jour uniquement certaines données
+    :param pompier_id: id du pompier a modifié
+    :param token_api: Token pour acceder à l'API
+    :param pompier: JSON des éléments a modifier
+    :return: Json du Pompier modifié
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.patch_pompier(db, pompier = pompier, pompier_id = pompier_id)
+
+"""DELETE REQUESTS"""
+@app.delete("/pompier/{pompier_id}", tags=["Pompier"], response_model=schemas.Pompier)
+def delete_pompier(pompier_id: int, token_api: str, db: Session = Depends(get_db)):
+    """
+    DELETE Pompier by id.
+
+    :param pompier_id:
+    :param token_api:
+    :param db:
+    :return:
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.delete_pompier(db, pompier_id = pompier_id)
+
 
 @app.get("/pompier/{id_pompier}", tags=["Pompier"], response_model=schemas.PompierAll)
 def get_pompier_id(token_api: str, id_pompier:int, db: Session = Depends(get_db)):
@@ -490,6 +518,35 @@ def create_caserne(token_api: str, caserne: schemas.CaserneCreate, db: Session =
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
     return crud.create_caserne(db, caserne=caserne)
 
+"""PATCH REQUESTS"""
+
+@app.patch("/caserne/{caserne_id}", tags=["Caserne"], response_model=schemas.Caserne)
+def edit_caserne(caserne_id: int, token_api: str, caserne: schemas.CaserneUpdate, db: Session = Depends(get_db)):
+    """
+    PATCH = met a jour uniquement certaines données
+    :param caserne_id: id de la caserne a modifié
+    :param token_api: Token pour acceder à l'API
+    :param caserne: JSON des éléments a modifier
+    :return: Json du Caserne modifié
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.patch_caserne(db, caserne = caserne, caserne_id = caserne_id)
+
+"""DELETE REQUESTS"""
+@app.delete("/caserne/{caserne_id}", tags=["Caserne"], response_model=schemas.Caserne)
+def delete_caserne(caserne_id: int, token_api: str, db: Session = Depends(get_db)):
+    """
+    DELETE Caserne by id.
+
+    :param caserne_id:
+    :param token_api:
+    :param db:
+    :return:
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.delete_caserne(db, caserne_id = caserne_id)
+
+
 @app.get("/caserne/{id_caserne}", tags=["Caserne"], response_model=schemas.Caserne)
 def get_caserne_id(token_api: str, id_caserne:int, db: Session = Depends(get_db)):
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
@@ -509,6 +566,35 @@ Vehicule
 def create_vehicule(token_api: str, vehicule: schemas.VehiculeCreate, db: Session = Depends(get_db)):
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
     return crud.create_vehicule(db, vehicule=vehicule)
+
+"""PATCH REQUESTS"""
+
+@app.patch("/vehicule/{vehicule_id}", tags=["Vehicule"], response_model=schemas.Vehicule)
+def edit_vehicule(vehicule_id: int, token_api: str, vehicule: schemas.VehiculeUpdate, db: Session = Depends(get_db)):
+    """
+    PATCH = met a jour uniquement certaines données
+    :param vehicule_id: id du vehicule a modifié
+    :param token_api: Token pour acceder à l'API
+    :param vehicule: JSON des éléments a modifier
+    :return: Json du Vehicule modifié
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.patch_vehicule(db, vehicule = vehicule, vehicule_id = vehicule_id)
+
+"""DELETE REQUESTS"""
+@app.delete("/vehicule/{vehicule_id}", tags=["Vehicule"], response_model=schemas.Vehicule)
+def delete_vehicule(vehicule_id: int, token_api: str, db: Session = Depends(get_db)):
+    """
+    DELETE Vehicule by id.
+
+    :param vehicule_id:
+    :param token_api:
+    :param db:
+    :return:
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.delete_vehicule(db, vehicule_id = vehicule_id)
+
 
 
 

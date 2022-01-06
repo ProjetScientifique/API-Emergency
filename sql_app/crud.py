@@ -73,12 +73,12 @@ def delete_incident(db: Session, incident_id: int):
 
 
 """
-________          __                 __          
-\______ \   _____/  |_  ____   _____/  |_  ____  
- |    |  \_/ __ \   __\/ __ \_/ ___\   __\/ __ \ 
- |    `   \  ___/|  | \  ___/\  \___|  | \  ___/ 
-/_______  /\___  >__|  \___  >\___  >__|  \___  >
-        \/     \/          \/     \/          \/       
+________          __                 __                       
+\______ \   _____/  |_  ____   _____/  |_  ____  __ _________ 
+ |    |  \_/ __ \   __\/ __ \_/ ___\   __\/ __ \|  |  \_  __ \
+ |    `   \  ___/|  | \  ___/\  \___|  | \  ___/|  |  /|  | \/
+/_______  /\___  >__|  \___  >\___  >__|  \___  >____/ |__|   
+        \/     \/          \/     \/          \/              
 """
 
 # get un detecteur
@@ -192,8 +192,15 @@ def get_detectes_events(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Detecte).offset(skip).limit(limit).all()
 
 
+"""
+__________                     .__              
+\______   \____   _____ ______ |__| ___________ 
+ |     ___/  _ \ /     \\____ \|  |/ __ \_  __ \
+ |    |  (  <_> )  Y Y  \  |_> >  \  ___/|  | \/
+ |____|   \____/|__|_|  /   __/|__|\___  >__|   
+                      \/|__|           \/       
 
-"""Pompier"""
+"""
 
 # create un pompier
 def create_pompier(db: Session, pompier: schemas.PompierCreate):
@@ -210,6 +217,30 @@ def create_pompier(db: Session, pompier: schemas.PompierCreate):
     db.commit()
     db.refresh(db_pompier)
     return db_pompier
+
+# patch un pompier
+def patch_pompier(db: Session, pompier: schemas.PompierUpdate, pompier_id: int):
+    
+    pompier_to_patch = db.query(models.Pompier).filter(models.Pompier.id_pompier == pompier_id).first()
+    
+    if pompier.id_caserne: pompier_to_patch.id_caserne = pompier.id_caserne
+    if pompier.id_type_pompier: pompier_to_patch.id_type_pompier = pompier.id_type_pompier
+    if pompier.nombre_intervention_jour_maximum_pompier: pompier_to_patch.nombre_intervention_jour_maximum_pompier = pompier.nombre_intervention_jour_maximum_pompier
+    if pompier.disponibilite_pompier: pompier_to_patch.disponibilite_pompier = pompier.disponibilite_pompier
+    
+    db.commit()
+    return pompier_to_patch
+
+# delete un pompier
+def delete_pompier(db: Session, pompier_id: int):
+    pompier_to_delete = db.query(models.Pompier).filter(models.Pompier.id_pompier == pompier_id).first()
+
+    if pompier_to_delete is None:
+        raise HTTPException(status_code=404, detail="Resource Not Found")
+
+    db.delete(pompier_to_delete)
+    db.commit()
+    return pompier_to_delete
 
 # get un pompier par l'id
 def get_pompier_id(db: Session, pompier_id: int):
@@ -258,7 +289,16 @@ def get_type_pompier_id(db: Session, id_type_pompier:int):
 def get_type_pompier_all(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Type_pompier).offset(skip).limit(limit).all()
 
-"""caserne"""
+"""
+_________                                           
+\_   ___ \_____    ______ ___________  ____   ____  
+/    \  \/\__  \  /  ___// __ \_  __ \/    \_/ __ \ 
+\     \____/ __ \_\___ \\  ___/|  | \/   |  \  ___/ 
+ \______  (____  /____  >\___  >__|  |___|  /\___  >
+        \/     \/     \/     \/           \/     \/ 
+
+"""
+
 # create caserne
 def create_caserne(db: Session, caserne: schemas.CaserneCreate):
     db_caserne = models.Caserne(
@@ -270,6 +310,29 @@ def create_caserne(db: Session, caserne: schemas.CaserneCreate):
     db.commit()
     db.refresh(db_caserne)
     return db_caserne
+
+# patch une caserne
+def patch_caserne(db: Session, caserne: schemas.CaserneUpdate, caserne_id: int):
+    
+    caserne_to_patch = db.query(models.Caserne).filter(models.Caserne.id_caserne == caserne_id).first()
+    
+    if caserne.nom_caserne: caserne_to_patch.nom_caserne = caserne.nom_caserne
+    if caserne.latitude_caserne: caserne_to_patch.latitude_caserne = caserne.latitude_caserne
+    if caserne.longitude_caserne: caserne_to_patch.longitude_caserne = caserne.longitude_caserne
+   
+    db.commit()
+    return caserne_to_patch
+
+# delete une caserne
+def delete_caserne(db: Session, caserne_id: int):
+    caserne_to_delete = db.query(models.Caserne).filter(models.Caserne.id_caserne == caserne_id).first()
+
+    if caserne_to_delete is None:
+        raise HTTPException(status_code=404, detail="Resource Not Found")
+
+    db.delete(caserne_to_delete)
+    db.commit()
+    return caserne_to_delete
 
 # get une caserne par l'id
 def get_caserne_id(db: Session, id_caserne:int):
@@ -297,6 +360,32 @@ def create_vehicule(db: Session, vehicule: schemas.VehiculeCreate):
     db.commit()
     db.refresh(db_vehicule)
     return db_vehicule
+
+
+# patch un vehicule
+def patch_vehicule(db: Session, vehicule: schemas.VehiculeUpdate, vehicule_id: int):
+    
+    vehicule_to_patch = db.query(models.Vehicule).filter(models.Vehicule.id_vehicule == vehicule_id).first()
+    
+    if vehicule.id_caserne: vehicule_to_patch.id_caserne = vehicule.id_caserne
+    if vehicule.id_type_disponibilite_vehicule: vehicule_to_patch.id_type_disponibilite_vehicule = vehicule.id_type_disponibilite_vehicule
+    if vehicule.latitude_vehicule: vehicule_to_patch.latitude_vehicule = vehicule.latitude_vehicule
+    if vehicule.longitude_vehicule: vehicule_to_patch.longitude_vehicule = vehicule.longitude_vehicule
+    if vehicule.nombre_intervention_maximum_vehicule: vehicule_to_patch.nombre_intervention_maximum_vehicule = vehicule.nombre_intervention_maximum_vehicule
+   
+    db.commit()
+    return vehicule_to_patch
+
+# delete un vehicule
+def delete_vehicule(db: Session, vehicule_id: int):
+    vehicule_to_delete = db.query(models.Vehicule).filter(models.Vehicule.id_vehicule == vehicule_id).first()
+
+    if vehicule_to_delete is None:
+        raise HTTPException(status_code=404, detail="Resource Not Found")
+
+    db.delete(vehicule_to_delete)
+    db.commit()
+    return vehicule_to_delete
 
 # get un véhicule par l'id
 def get_vehicule_id(db: Session, vehicule_id: int):
