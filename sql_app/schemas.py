@@ -35,7 +35,8 @@ class IncidentBase(BaseModel):
     date_incident: datetime.datetime
     id_type_status_incident: int
 
-
+    class Config:
+        orm_mode = True
 
 class IncidentUpdate(BaseModel):
     id_type_incident: Optional[int]
@@ -43,6 +44,7 @@ class IncidentUpdate(BaseModel):
     longitude_incident: Optional[float]
     intensite_incident: Optional[float]
     date_incident: Optional[datetime.datetime]
+    id_type_status_incident: Optional[int]
 
 class IncidentCreate(IncidentBase):
     pass
@@ -55,7 +57,7 @@ class Incident(IncidentBase):
 
 class IncidentAll(Incident):
     type_incident : Type_incident
-    Type_status_incident : Type_status_incident
+    type_status_incident : Type_status_incident
 
     class Config:
         orm_mode = True
@@ -75,14 +77,12 @@ class DetecteurBase(BaseModel):
     id_type_detecteur: int
     latitude_detecteur: float
     longitude_detecteur: float
-    nom_detecteur: str
 
 
 class DetecteurUpdate(BaseModel):
     id_type_detecteur: Optional[int]
     latitude_detecteur: Optional[float]
     longitude_detecteur: Optional[float]
-    nom_detecteur: Optional[str]
 
 
 class DetecteurCreate(DetecteurBase):
@@ -103,6 +103,8 @@ class Type_detecteur(BaseModel):
     class Config:
         orm_mode = True
 
+class Type_detecteurCreate(Type_detecteur):
+    pass
 
 
 

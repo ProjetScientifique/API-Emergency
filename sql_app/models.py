@@ -61,7 +61,6 @@ class Detecteur(Base):
     __tablename__ = "detecteur"
     id_detecteur = Column(Integer, primary_key=True)
     id_type_detecteur = Column(Integer, ForeignKey('type_detecteur.id_type_detecteur'))
-    nom_detecteur = Column(String)
     latitude_detecteur = Column(Numeric(precision=9, scale=7))
     longitude_detecteur = Column(Numeric(precision=10, scale=7))
 
