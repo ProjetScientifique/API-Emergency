@@ -91,7 +91,8 @@ def get_detecteurs(db: Session, skip: int = 0, limit: int = 100):
 
 # create un detecteur
 def create_detecteur(db: Session, detecteur: schemas.DetecteurCreate):
-    db_detecteur = models.Detecteur(id_type_detecteur=detecteur.id_type_detecteur,
+    db_detecteur = models.Detecteur(id_detecteur=detecteur.id_detecteur,
+                                    id_type_detecteur=detecteur.id_type_detecteur,
                                     latitude_detecteur=detecteur.latitude_detecteur,
                                     longitude_detecteur=detecteur.longitude_detecteur)
     db.add(db_detecteur)
