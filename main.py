@@ -412,18 +412,7 @@ def delete_detecte(id_incident:int, id_detecteur:int, token_api: str, db: Sessio
     -->
     """
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
-    detecte_event_to_delete = db.query(models.Detecte).\
-        filter(models.Detecte.id_detecteur == id_detecteur).\
-        filter(models.Detecte.id_incident == id_incident).\
-        first()
-
-    if detecte_event_to_delete is None:
-        raise HTTPException(status_code=404, detail="Resource Not Found")
-
-    db.delete(detecte_event_to_delete)
-    db.commit()
-
-    return detecte_event_to_delete
+    return crud.delete_detecte(id_incident, id_detecteur, db)
 
 
 """==============

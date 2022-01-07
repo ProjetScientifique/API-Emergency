@@ -194,7 +194,20 @@ def get_detecte_event(id_incident:int , id_detecteur:int ,db: Session):
 def get_detectes_events(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Detecte).offset(skip).limit(limit).all()
 
+# delete detection
+def delete_detecte(id_incident: int, id_detecteur: int, db: Session):
+    detecte_event_to_delete = db.query(models.Detecte).\
+        filter(models.Detecte.id_detecteur == id_detecteur).\
+        filter(models.Detecte.id_incident == id_incident).\
+        first()
 
+    if detecte_event_to_delete is None:
+        raise HTTPException(status_code=404, detail="Resource Not Found")
+
+    db.delete(detecte_event_to_delete)
+    db.commit()
+
+    return detecte_event_to_delete
 """
 __________                     .__              
 \______   \____   _____ ______ |__| ___________ 
@@ -447,6 +460,11 @@ def get_type_vehicule_all(db: Session, skip: int = 0, limit: int = 100):
 
 # delete tous les detecteurs et tous les incidents et met à 1 les id de ces tables
 def delete_all_caserne_and_incident(db: Session):
+
+    detectes = get_detectes_events(db, 0, 100)
+    for detecte in detectes:
+        delete_detecte(detecte.id_incident, detecte.id_detecteur, db)
+
     detecteurs = get_detecteurs(db, 0, 100)
     for detecteur in detecteurs:
         delete_detecteur(db, detecteur.id_detecteur)
@@ -459,4 +477,4 @@ def delete_all_caserne_and_incident(db: Session):
         # remise de l'id incident à 1
         engine.execute('ALTER SEQUENCE public.incident_id_incident_seq RESTART WITH 1;')
 
-    return "Les éléments dans la table incident et detecteur ont bien été supprimés"
+    return {"status":200,"message":"Toutes les éléments des tables (incident, detecteur, detecte) sont supprimées"}
