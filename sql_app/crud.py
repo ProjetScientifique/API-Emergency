@@ -229,7 +229,8 @@ def patch_pompier(db: Session, pompier: schemas.PompierUpdate, pompier_id: int):
     if pompier.id_caserne: pompier_to_patch.id_caserne = pompier.id_caserne
     if pompier.id_type_pompier: pompier_to_patch.id_type_pompier = pompier.id_type_pompier
     if pompier.nombre_intervention_jour_maximum_pompier: pompier_to_patch.nombre_intervention_jour_maximum_pompier = pompier.nombre_intervention_jour_maximum_pompier
-    if pompier.disponibilite_pompier: pompier_to_patch.disponibilite_pompier = pompier.disponibilite_pompier
+    if str(pompier.disponibilite_pompier) != "" : pompier_to_patch.disponibilite_pompier = pompier.disponibilite_pompier
+    print(pompier.disponibilite_pompier)
     
     db.commit()
     return pompier_to_patch
