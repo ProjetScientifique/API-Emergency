@@ -3,6 +3,9 @@ from sqlalchemy import func
 from . import models, schemas
 from fastapi import HTTPException
 
+from sql_app.database import engine
+
+
 
 """
 .___              .__    .___             __   
@@ -91,8 +94,7 @@ def get_detecteurs(db: Session, skip: int = 0, limit: int = 100):
 
 # create un detecteur
 def create_detecteur(db: Session, detecteur: schemas.DetecteurCreate):
-    db_detecteur = models.Detecteur(id_detecteur=detecteur.id_detecteur,
-                                    id_type_detecteur=detecteur.id_type_detecteur,
+    db_detecteur = models.Detecteur(id_type_detecteur=detecteur.id_type_detecteur,
                                     latitude_detecteur=detecteur.latitude_detecteur,
                                     longitude_detecteur=detecteur.longitude_detecteur)
     db.add(db_detecteur)
@@ -441,3 +443,19 @@ def get_type_vehicule_id(db: Session, id_type_vehicule:int):
 # get tous les type de vehicules
 def get_type_vehicule_all(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Type_vehicule).offset(skip).limit(limit).all()
+
+# delete tous les detecteurs et tous les incidents et met à 1 les id de ces tables
+def delete_all_caserne_and_incident(db: Session):
+    detecteurs = get_detecteurs(db, 0, 100)
+    for detecteur in detecteurs:
+        delete_detecteur(db, detecteur.id_detecteur)
+        # remise de l'id detecteur à 1
+        engine.execute('ALTER SEQUENCE public.detecteur_id_detecteur_seq RESTART WITH 1;')
+
+    incidents = get_incidents(db, 0, 100)
+    for incident in incidents:
+        delete_incident(db, incident.id_incident)
+        # remise de l'id incident à 1
+        engine.execute('ALTER SEQUENCE public.incident_id_incident_seq RESTART WITH 1;')
+
+    return "Les éléments dans la table incident et detecteur ont bien été supprimés"

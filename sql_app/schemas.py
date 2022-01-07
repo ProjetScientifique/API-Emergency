@@ -74,7 +74,6 @@ ________          __                 __
 
 
 class DetecteurBase(BaseModel):
-    id_detecteur: Optional[int]
     id_type_detecteur: int
     latitude_detecteur: float
     longitude_detecteur: float

@@ -633,3 +633,13 @@ def get_type_vehicule_all(token_api: str, skip: int = 0, limit: int = 100, db: S
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
     return crud.get_type_vehicule_all(db, skip, limit)
 
+
+# Permet de delete tous les éléments dans la table incident et detecteur mais également de remettre les ids à 1
+@app.delete("/delete_all/", tags=["RESET"])
+def delete_all_element_database(token_api: str, db: Session = Depends(get_db)):
+    """
+        Supprime toutes les entrés de toutes les tables.
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.") 
+    return crud.delete_all_caserne_and_incident(db)
+
