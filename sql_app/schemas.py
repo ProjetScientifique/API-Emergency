@@ -146,6 +146,15 @@ class CaserneBase(BaseModel):
     class Config:
         orm_mode = True
 
+class CaserneUpdate(BaseModel):
+   
+    nom_caserne: Optional[str]
+    latitude_caserne: Optional[float]
+    longitude_caserne: Optional[float]
+
+    class Config:
+        orm_mode = True
+
 class CaserneCreate(CaserneBase):
     pass
 
@@ -271,7 +280,7 @@ class VehiculeBase(BaseModel):
 
 class VehiculeUpdate(BaseModel):
     id_caserne: Optional[int]
-    id_type_disponibilie_vehicule: Optional[int]
+    id_type_disponibilite_vehicule: Optional[int]
     nombre_intervention_maximum_vehicule: Optional[int]
     latitude_vehicule: Optional[float]
     longitude_vehicule: Optional[float]
