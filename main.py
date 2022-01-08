@@ -585,8 +585,6 @@ def delete_vehicule(vehicule_id: int, token_api: str, db: Session = Depends(get_
     return crud.delete_vehicule(db, vehicule_id = vehicule_id)
 
 
-
-
 @app.get("/vehicule/{id_vehicule}", tags=["Vehicule"], response_model=schemas.VehiculeAll)
 def get_vehicule_id(token_api: str, id_vehicule:int, db: Session = Depends(get_db)):
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
@@ -622,6 +620,63 @@ def get_type_vehicule_all(token_api: str, skip: int = 0, limit: int = 100, db: S
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
     return crud.get_type_vehicule_all(db, skip, limit)
 
+
+# Intervient
+
+@app.post("/intervient/", tags=["Intervient"], response_model=schemas.Intervient)
+def create_intervient_event(token_api: str, intervient: schemas.Intervient, db: Session = Depends(get_db)):
+    """
+    {
+      "id_pompier": 3,
+      "id_vehicule": 2,
+      "id_incident": 10,
+      "date_detecte": "2022-01-04T10:38:12.197000+00:00"
+    }
+
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.create_intervient_event(db, intervient=intervient)
+
+@app.get("/intervient/", tags=["Intervient"], response_model=schemas.Intervient)
+def get_intervient_event(token_api: str, id_incident:int, id_pompier:int, id_vehicule:int, db: Session = Depends(get_db)):
+    """
+    
+
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    db_intervient = crud.get_intervient_event(id_incident, id_pompier, id_vehicule, db)
+    if db_intervient is None:
+        raise HTTPException(status_code=404, detail="Event Intervient not found")
+    return db_intervient
+
+@app.get("/intervients/", tags=["Intervient"], response_model=List[schemas.Intervient])
+def get_intervients_events(token_api: str,skip: int = 0, limit: int = 100,  db: Session = Depends(get_db)):
+    """
+    Recupere toutes les liaisons intervient.
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    db_intervient = crud.get_intervients_events(db,skip,limit)
+    if db_intervient is None:
+        raise HTTPException(status_code=404, detail="Event Detecte not found")
+    return db_intervient
+
+@app.delete("/intervient/", tags=["Intervient"], response_model=schemas.Intervient)
+def delete_intervient(id_incident:int, id_pompier:int, id_vehicule: int, token_api: str, db: Session = Depends(get_db)):
+    """
+    Supprime une liaison intervient.
+
+    <!--
+    Python : 
+
+        :param id_incident: int
+        :param id_pompier: int
+        :param id_vehicule: int
+        :param token_api: str
+        :return: schema.Intervient
+    -->
+    """
+    if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.")
+    return crud.delete_intervient(id_incident, id_pompier, id_vehicule, db)
 
 # Permet de delete tous les éléments dans la table incident et detecteur mais également de remettre les ids à 1
 @app.delete("/delete_all/", tags=["RESET"])

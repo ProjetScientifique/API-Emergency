@@ -458,12 +458,58 @@ def get_type_vehicule_id(db: Session, id_type_vehicule:int):
 def get_type_vehicule_all(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Type_vehicule).offset(skip).limit(limit).all()
 
+
+# create une interviention
+def create_intervient_event(db: Session, intervient: schemas.Intervient):
+    db_intervient = models.Intervient(id_incident=intervient.id_incident,
+                                      id_pompier=intervient.id_pompier,
+                                      id_vehicule=intervient.id_vehicule,
+                                      date_intervient=intervient.date_intervient
+                               )
+    db.add(db_intervient)
+    db.commit()
+    db.refresh(db_intervient)
+    return db_intervient
+
+# get une intervention par l'id incident et pompier et vehicule
+def get_intervient_event(id_incident:int, id_pompier:int, id_vehicule:int, db: Session):
+    return db.query(models.Intervient).\
+        filter(models.Intervient.id_incident == id_incident).\
+        filter(models.Intervient.id_pompier == id_pompier).\
+        filter(models.Intervient.id_vehicule == id_vehicule).\
+        first()
+
+# get toutes les interventions
+def get_intervients_events(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Intervient).offset(skip).limit(limit).all()
+
+# delete intervention
+def delete_intervient(id_incident: int, id_pompier: int, id_vehicule: int, db: Session):
+    intervient_event_to_delete = db.query(models.Intervient).\
+        filter(models.Intervient.id_incident == id_incident).\
+        filter(models.Intervient.id_pompier == id_pompier).\
+        filter(models.Intervient.id_vehicule == id_vehicule).\
+        first()
+
+    if intervient_event_to_delete is None:
+        raise HTTPException(status_code=404, detail="Resource Not Found")
+
+    db.delete(intervient_event_to_delete)
+    db.commit()
+
+    return intervient_event_to_delete
+
 # delete tous les detecteurs et tous les incidents et met à 1 les id de ces tables
 def delete_all_caserne_and_incident(db: Session):
 
     detectes = get_detectes_events(db, 0, 100)
     for detecte in detectes:
         delete_detecte(detecte.id_incident, detecte.id_detecteur, db)
+
+    intervients = get_intervients_events(db, 0, 100)
+    for intervient in intervients:
+        delete_intervient(intervient.id_incident, intervient.id_pompier, intervient.id_vehicule, db)
+
 
     detecteurs = get_detecteurs(db, 0, 100)
     for detecteur in detecteurs:
@@ -476,5 +522,25 @@ def delete_all_caserne_and_incident(db: Session):
         delete_incident(db, incident.id_incident)
         # remise de l'id incident à 1
         engine.execute('ALTER SEQUENCE public.incident_id_incident_seq RESTART WITH 1;')
+
+    pompiers = get_pompier_all(db, 0, 100)
+    for pompier in pompiers:
+        delete_pompier(db, pompier.id_pompier)
+        # remise de l'id pompier à 1
+        engine.execute('ALTER SEQUENCE public.pompier_id_pompier_seq RESTART WITH 1;')
+
+    vehicules = get_vehicule_all(db, 0, 100)
+    for vehicule in vehicules:
+        delete_vehicule(db, vehicule.id_vehicule)
+        # remise de l'id pompier à 1
+        engine.execute('ALTER SEQUENCE public.vehicule_id_vehicule_seq RESTART WITH 1;')
+
+    casernes = get_caserne_all(db, 0, 100)
+    for caserne in casernes:
+        delete_caserne(db, caserne.id_caserne)
+        # remise de l'id caserne à 1
+        engine.execute('ALTER SEQUENCE public.caserne_id_caserne_seq RESTART WITH 1;')
+
+
 
     return {"status":200,"message":"Toutes les éléments des tables (incident, detecteur, detecte) sont supprimées"}
