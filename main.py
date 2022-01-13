@@ -1,3 +1,4 @@
+from turtle import forward
 from utilities import fonction, token
 from typing import List, Optional
 
@@ -6,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from sql_app import crud, models, schemas
 from sql_app.database import SessionLocal, engine
+import uvicorn
 
 description = """
 API Emergency Projet Scientifique Transverse 🚒
@@ -687,3 +689,5 @@ def delete_all_element_database(token_api: str, db: Session = Depends(get_db)):
     if not token.token(token_api): raise HTTPException(status_code=401, detail="Token API non ou mal définit.") 
     return crud.delete_all_caserne_and_incident(db)
 
+if __name__ == '__main__':
+    uvicorn.run(app, port=8000, host="0.0.0.0")
